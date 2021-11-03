@@ -23,6 +23,7 @@ private:
         Node(T &userData)
         {
             data=userData;
+            prev=nullptr;
         }
         
     };
@@ -33,20 +34,39 @@ private:
     
 public:
     //Appends the T type of data to the end of the List.
-    void append(T &userData);
+    void append(T userData);
+    
+    
     
     //Checks whether the List is Empty.
     //Return True if the List is Empty.
     bool isEmpty() const;
      
-    //Prints the List
-    void print() const;
+    //Prints the List in Forward/first in first out format.
+    void printForward() const;
     
     
+    //Prints the List in Reverse Order.
+    void printReverse()const;
+    
+    
+    //Resets the List
+    void resetList() ;
+    
+    
+    //Removes the data from the List by the position which is specified.Return True if Removed Successfully or else return false.
+    bool remove(size_t position);
+    
+    //Removes the data from the List .Return True if Removed Successfully or else return false.
+    bool remove(T data);
+    
+    
+    //Returns true if the data is present or else returns false
+    bool search(T data);
 };
 
 template <typename T>
-void List<T>::append(T &userData){
+void List<T>::append(T userData){
     std::unique_ptr<Node> userNode= std::make_unique<Node>(userData);
     if(isEmpty()){
         head=std::move(userNode);
@@ -54,10 +74,12 @@ void List<T>::append(T &userData){
         numberOfNodes++;
     }else{
         tail->next=std::move(userNode);
+        tail->next->prev=tail;
         tail=tail->next.get();
         numberOfNodes++;
     }
 }
+
 
 template <typename T>
 bool List<T>::isEmpty() const{
@@ -69,7 +91,7 @@ bool List<T>::isEmpty() const{
 
 
 template <typename T>
-void List<T>::print() const{
+void List<T>::printForward() const{
     std::cout<<"Elements in the List are as follows"<<std::endl;
     Node *iterptr=head.get();
     while(iterptr->next!=nullptr){
@@ -78,8 +100,123 @@ void List<T>::print() const{
     }
     std::cout<<iterptr->data<<std::endl;
     
+    
 }
 
+template <typename T>
+void List<T>::printReverse() const{
+    std::cout<<"Elements in the List are as follows (Reverse Order) "<<std::endl;
+    Node *iterptr=tail;
+    while(iterptr->prev!=nullptr){
+        std::cout<<iterptr->data<<std::endl;
+        iterptr=iterptr->prev;
+    }
+    std::cout<<iterptr->data<<std::endl;
+    
+}
+
+
+template <typename T>
+void List<T>::resetList() {
+    head.reset();
+}
+
+
+template <typename T>
+bool List<T>::remove(size_t position){
+    if(isEmpty()){
+        std::cout<<"List is Empty .Cannot Remove element at position"<<position<<std::endl;
+        return false;
+    }else{
+        if(position>=numberOfNodes){
+            std::cout<<"Position Entered is Incorrect Please Try Again Later."<<std::endl;
+            return false;
+        }
+        //if there is only one node in the List.
+        if(position==0){
+            head=std::move(head->next);
+            if(numberOfNodes>1){
+                head->prev=nullptr;
+            }
+            numberOfNodes--;
+            return true;
+        }else{
+            size_t counter{0};
+            Node *iterptr=head.get();
+            while(counter<position-1){
+                iterptr=iterptr->next.get();
+                counter++;
+            }
+            if(position!=numberOfNodes-1){
+            iterptr->next=std::move(iterptr->next->next);
+                iterptr->next->prev=iterptr;
+                numberOfNodes--;
+                
+            }else{
+                iterptr->next=nullptr;
+                numberOfNodes--;
+             
+            }
+            return true;
+        
+        }
+    }
+}
+
+template <typename T>
+bool List<T>::remove(T data){
+    if(isEmpty()){
+        std::cout<<"List is Empty "<<std::endl;
+        return false;
+    }else{
+        Node *iterptr=head.get();
+        if(iterptr->data==data){
+            head=std::move(head->next);
+            if(numberOfNodes>1){
+                head->prev=nullptr;
+            }
+            numberOfNodes--;
+            return true;
+        }else{
+            while (iterptr->next!=nullptr ) {
+                if(iterptr->data==data){
+                    iterptr->next->prev=iterptr->prev;
+                    iterptr->prev->next=std::move(iterptr->next);
+                    numberOfNodes--;
+                    return true;
+                }
+                iterptr=iterptr->next.get();
+            }
+            //If the node is Last Node in the List
+            if(iterptr->data==data){
+                iterptr->prev->next=nullptr;
+                numberOfNodes--;
+                return true;
+            }else{
+                std::cout<<"Node With the Given Value is not found "<<std::endl;
+                return false;
+            }
+        }
+    }
+}
+
+
+template <typename T>
+bool List<T>::search(T userData) {
+    
+    Node *iterptr=head.get();
+    while(iterptr->next!=nullptr){
+        if(iterptr->data==userData){
+            return true;
+        }
+        iterptr=iterptr->next.get();
+    }
+    if(iterptr->data==userData){
+        return true;
+    }
+    return false;
+    
+}
 
 }
 #endif /* DoublyLinkedList_hpp */
