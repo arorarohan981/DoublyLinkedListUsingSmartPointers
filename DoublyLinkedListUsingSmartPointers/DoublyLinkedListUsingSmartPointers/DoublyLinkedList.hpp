@@ -36,7 +36,8 @@ public:
     //Appends the T type of data to the end of the List.
     void append(T userData);
     
-    
+    //Appends the T type of data at the specified position in the List.
+    void append(T userData,int position);
     
     //Checks whether the List is Empty.
     //Return True if the List is Empty.
@@ -80,6 +81,48 @@ void List<T>::append(T userData){
     }
 }
 
+
+template <typename T>
+void List<T>::append(T userData,int position){
+    if(position<0){
+        std::cout<<"Position cannot be Negative "<<std::endl;
+        return;
+    }else{
+    if(position!=0 and isEmpty()){
+        std::cout<<"List is Empty. Cannot Append the Element at the Specified Position"<<std::endl;
+        return;
+    }else
+    {
+        std::unique_ptr<Node> temp;
+        if(position==0){
+            temp=std::move(head);
+            head=std::make_unique<Node>(userData);
+            head->next=std::move(temp);
+            head->next->prev=head.get();
+        }else{
+            int counter{1};
+            Node *iterptr=head.get();
+            while(counter<position){
+                iterptr=iterptr->next.get();
+                counter++;
+            }
+            
+            if(!position==numberOfNodes){
+                temp=std::move(iterptr->next);
+            iterptr->next=std::make_unique<Node>(userData);
+            iterptr->next->prev=iterptr;
+            iterptr->next->next=std::move(temp);
+                return;
+            }else{
+                iterptr->next=std::make_unique<Node>(userData);
+                iterptr->next->prev=iterptr;
+                return;
+            }
+            
+        }
+    }
+}
+}
 
 template <typename T>
 bool List<T>::isEmpty() const{

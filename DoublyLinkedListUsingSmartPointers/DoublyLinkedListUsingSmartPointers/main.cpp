@@ -16,13 +16,14 @@ int main(int argc, const char * argv[]) {
     mylist.append("o");
     mylist.append("h");
     mylist.append("a");
-    mylist.append("n");
+//    mylist.append("n");
 //    mylist.printReverse();
 //    mylist.resetList();
 //    mylist.remove(8);
+    mylist.append("z", 4);
     mylist.printForward();
 //    mylist.remove("n");
-    mylist.printForward();
+//    mylist.printForward();
 //    std::cout<<std::boolalpha<<mylist.search("n");
     return 0;
 }
